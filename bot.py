@@ -79,15 +79,6 @@ class MyBot(commands.AutoShardedBot):
                     print(f"Failed to load {path:>22}!")
                     print(e, "\n")
 
-
-    async def on_ready(self):
-        self.app_info = await self.application_info()
-        print("-" * 10)
-        print(f"Logged in as: {self.user.name}\n"
-              f"Using discord.py version: {discord.__version__}\n"
-              f"Owner: {self.app_info.owner}\n")
-        print("-" * 10)
-
     async def logout(self):
         await super().logout()
 
