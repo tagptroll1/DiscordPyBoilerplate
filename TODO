@@ -1,0 +1,63 @@
+
+Todo:
+  ✔ LOGGING EVERYTHAANG @done(18-07-04 12:20)
+  ☐ Moderation
+    ✔ Kick @done(18-07-04 09:23)
+    ✔ Ban @done(18-07-04 09:23)
+    ✔ Softban @done(18-07-04 09:23)
+    ✔ Hackban @done(18-07-04 09:23)
+      ✔ Hackban in ban @done(18-07-04 09:23)
+    ✔ logging @done(18-07-04 12:12)
+      ✔ In moderation @done(18-07-04 10:56)
+      ✔ Info @done(18-07-04 12:11)
+    ✔ Message logging example @done(18-07-04 18:45)
+    voice
+      ✔ mute @done(18-07-04 12:32)
+      ✔ deafen @started(18-07-04 12:21) @done(18-07-04 12:32) @lasted(11m35s)
+    chat
+      ☐ mute
+      ☐ deafen
+    ☐ Channel lockdown
+    ✔ Channel blacklist @done(18-07-04 09:23)
+    ☐ Warnings, possible x strike system with filters
+    ☐ Spam filter with different presets
+    ☐ Configs for most automated systems
+    ☐ moderation of cog usage pr guild
+
+
+  ☐ Role management
+    ☐ Give Channel and role to add permissions from role to channel
+    ☐ Create roles
+    ☐ Delete roles
+    ☐ Edit roles
+      ☐ Edit permissions
+      ☐ Add permissions
+      ☐ Remove permissions
+    ☐ Give roles 
+      ☐ Admin like
+      ☐ User can claim
+    ☐ Take role
+      ☐ Admin
+      ☐ User
+    
+  ☐ Voice Cog
+    ☐ Connect to voice channel
+    ☐ Move channel
+    ☐ Disconnect channel
+    ☐ Music
+      ☐ Playlist
+      ☐ Play
+      ☐ Stop
+      ☐ Pause
+      ☐ Skip
+      ☐ volume
+  
+  ☐ Custom prefix
+  ☐ Info commands
+    ☐ Channel
+    ☐ Member
+    ☐ Guild
+    ☐ Bot
+    ☐ Owner
+
+  ☐ Docstring

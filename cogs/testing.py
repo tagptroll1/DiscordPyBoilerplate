@@ -11,9 +11,6 @@ class Test:
         self.bot = bot
         self.db = bot.sqlite
 
-    @commands.command()
-    async def ping(self, ctx):
-        await ctx.send("Pong!")
     
     @commands.command()
     async def table(self, ctx, *, query):
@@ -61,19 +58,10 @@ class Test:
         except Exception as e:
             print(e)
 
-        
-
-
+    
     @commands.command(name="raise")
     async def raise_my_error(self, ctx):
         raise MyError("Whopsie")
-
-    async def on_command_error(self, ctx, error):
-        print(error, type(error))
-        print(error.__cause__, type(error.__cause__))
-        print(isinstance(error, MyError))
-        print(isinstance(error.__cause__, MyError))
-
 
 
 

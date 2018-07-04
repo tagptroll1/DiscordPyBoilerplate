@@ -1,9 +1,75 @@
+import datetime
+import asyncio
+from collections import OrderedDict as odict
+
 import discord
 from discord.ext import commands
+from Cryptodome.Cipher import AES
+from Cryptodome.Util import Padding
+
+from utils import database_manager as sqlite
+
 
 class Events:
     def __init__(self, bot):
         self.bot = bot
+        self.money_cooldown = commands.CooldownMapping.from_cooldown(
+            1.0, 60.0, commands.BucketType.user
+        )
+        self.aes = AES.new(self.bot.ENCRYPTKEY, AES.MODE_ECB)
+        self.log_chache = []
+
+    def log_dump(self):
+        async def dump_method(cache):
+            args = []
+            for ord_d in cache:
+                if ord_d["content"]:
+                    # Pads the message to always have same size pr line
+                    message = Padding.pad(bytes(ord_d["content"], "utf-8"), 16)
+                    # Encrypts the message
+                    encr_msg = self.aes.encrypt(message)
+                else:
+                    # Else it just stores the string No message, let's be honest
+                    # No policies broken there.
+                    encr_msg = "No message"
+
+                ord_d["content"] = encr_msg
+                args.append(list(ord_d.values()))
+            # Loop end
+
+            # Example of database dumping, with postgresql
+            # ===================================================
+            #query = """
+            #INSERT INTO messagelog(messageid, authorid, guildid, channelid, date, content)
+            #    VALUES($1, $2, $3, $4, $5, $6)
+            #ON CONFLICT(messageid, authorid)
+            #    DO NOTHING"""
+            #
+            # here self.bot.db is an pool from -> asyncpg.create_pool()
+            #async with self.bot.db.acquire() as connection:
+            #    async with connection.transaction():
+            #        await self.bot.db.executemany(query, args)
+            # =================================================== 
+
+            # Clear cache for new messages
+            cache[:] = []
+
+        self.bot.update(5, dump_method, self.log_chache)
+
+    async def load_blacklisted_channels(self):
+        self.bot.blacklistedrecords = await sqlite.fetchall(
+            """SELECT * FROM blacklistedchannels;""")
+
+        self.bot.blacklisted_channels = {
+            row[0] for row in self.bot.blacklistedrecords}
+
+
+    def is_blacklisted_channel(self, channel):
+        if channel in self.bot.blacklisted_channels:
+            return True
+        return False
+
+
 
     async def on_connect(self):
         """Called when the client has successfully connected to Discord.
@@ -19,12 +85,19 @@ class Events:
 
         Not guaranteed to be called first, nor once!
         """
+        # Logs in channels that are blacklsited from database
+        await self.load_blacklisted_channels()
+        # Starts a background task that dumpts a dict of messages tracked every 5 min
+        self.log_dump()
+
         self.bot.app_info = await self.bot.application_info()
         print("-" * 10)
         print(f"Logged in as: {self.bot.user.name}\n"
               f"Using discord.py version: {discord.__version__}\n"
               f"Owner: {self.bot.app_info.owner}\n")
         print("-" * 10)
+
+ 
 
 
     async def on_shard_ready(self, shard_id):
@@ -57,7 +130,32 @@ class Events:
 
         message -- A Message of the current message.
         """
-        pass
+        # Logging setup with encryption
+        # See log_dump for how to store.
+        
+        self.log_chache.append(
+            odict(
+                messageid=message.id,
+                authorid=message.author.id,
+                guildid=message.guild.id,
+                channelid=message.channel.id,
+                date=datetime.datetime.utcnow(),
+                content=message.content
+            )
+        )
+
+        # Add checks to be ignored by blacklists above this
+        if self.is_blacklisted_channel(message.channel.id):
+            return
+
+        # Add checks that respect the blacklist below this
+
+        # Example of a pay pr message with a cooldown system
+        bucket = self.money_cooldown.get_bucket(message)
+        retry_after = bucket.update_rate_limit()
+        if not retry_after:
+            pass # give money here
+
 
     async def on_message_delete(self, message):
         """Called when a message is deleted. 
@@ -270,7 +368,7 @@ class Events:
         """
         pass
 
-    async def on_voice_state_update(self, before, after):
+    async def on_voice_state_update(self, member, before, after):
         """Called when a Member changes their VoiceState.
         The following, but not limited to, examples illustrate when this event is called:
             A member joins a voice room.
