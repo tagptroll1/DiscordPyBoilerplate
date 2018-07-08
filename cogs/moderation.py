@@ -143,6 +143,39 @@ class Moderator:
         await ctx.message.add_reaction("🔨")
         self.bot.logger.warning(f"Owner dropped the table {table}, if it existed")
 
+    @commands.command()
+    async def warn(self, ctx, user:discord.Member, *, reason:str = None):
+        await db.execute("""
+            INSERT INTO warnings(guildid, userid)
+                VALUES (?, ?);
+        """, [ctx.guild.id, user.id])
+
+        rows = await db.fetchall("""
+            SELECT id FROM warnings
+                WHERE userid = ? AND guildid = ?;
+        """, [user.id, ctx.guild.id])
+        if reason:
+            warning = f"You have been warned in {ctx.guild.name}\n{reason}"
+        else:
+            warning = f"You have been warned in {ctx.guild.name}"
+        await user.send(f"{warning}, you have been warned {len(rows)} times")
+
+        embed = discord.Embed()
+        if reason:
+            warn = f"[{reason}]"
+        else:
+            warn = ""
+        embed.set_author(name=f"🔨 Warned {str(user)} {warn}",
+                        icon_url=user.avatar_url)
+
+        if len(rows) > 1:
+            countstr = f"This is your {len(rows)}. warning"
+        else:
+            countstr = f"This is your first warning"
+        embed.set_footer(text=countstr)
+        embed.colour = 0xff0000
+        await ctx.send(embed=embed)
+
 
     @commands.command()
     @commands.bot_has_permissions(kick_members=True)
@@ -185,7 +218,7 @@ class Moderator:
                 return ctx.send("Int not provided for hack ban to work")
 
 
-        reason = reason or f"Banned by {ctx.author.name}"
+        reason = reason or f"Banned by {str(ctx.author)}"
         try:
             await ctx.guild.ban(member, reason=reason)
         except discord.HTTPException:

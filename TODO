@@ -19,26 +19,26 @@ Todo:
       ☐ deafen
     ☐ Channel lockdown
     ✔ Channel blacklist @done(18-07-04 09:23)
-    ☐ Warnings, possible x strike system with filters
+    ✔ Warnings, possible x strike system with filters @started(18-07-06 15:08) @done(18-07-06 15:50) @lasted(42m21s)
+      ☐ Create some form of warning cleanup / punishment
     ☐ Spam filter with different presets
     ☐ Configs for most automated systems
     ☐ moderation of cog usage pr guild
 
 
-  ☐ Role management
-    ☐ Give Channel and role to add permissions from role to channel
-    ☐ Create roles
-    ☐ Delete roles
+  ☐ Role management @started(18-07-08 08:43)
+    ✔ Create roles @done(18-07-08 09:08)
+    ✔ Delete roles @started(18-07-08 09:08) @done(18-07-08 09:34) @lasted(26m41s)
     ☐ Edit roles
       ☐ Edit permissions
       ☐ Add permissions
       ☐ Remove permissions
-    ☐ Give roles 
-      ☐ Admin like
-      ☐ User can claim
-    ☐ Take role
-      ☐ Admin
-      ☐ User
+    ✔ Give roles @started(18-07-08 09:41) @done(18-07-08 10:27) @lasted(46m14s)
+      ✔ Admin like @started(18-07-08 09:41) @done(18-07-08 09:46) @lasted(5m23s)
+      ✔ User can claim @done(18-07-08 10:27)
+    ✔ Take role @done(18-07-08 16:37)
+      ✔ Admin @done(18-07-08 15:40)
+      ✔ User @done(18-07-08 16:37)
     
   ☐ Voice Cog
     ☐ Connect to voice channel

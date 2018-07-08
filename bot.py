@@ -239,6 +239,12 @@ def make_sure_databases_exist():
             prefix text,
             PRIMARY KEY (guildid, prefix));""")
 
+    sqlite.sync_execute("""
+        CREATE TABLE IF NOT EXISTS warnings(
+            id int PRIMARY KEY,
+            guildid BIGINT,
+            userid BIGINT);""")
+
 if __name__ == "__main__":
     os.system("CLS")
     make_sure_databases_exist()
