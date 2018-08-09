@@ -61,3 +61,25 @@ Todo:
     ☐ Owner
 
   ☐ Docstring
+
+  ☐ Bug: 
+    Traceback (most recent call last):
+      File "C:\Users\Admin\AppData\Local\Programs\Python\Python36-32\lib\site-packages\aiosqlite\core.py", line 136, in run
+        result = fn()
+    sqlite3.OperationalError: table prefixes has no column named guild
+    returning exception table prefixes has no column named guild
+    Traceback (most recent call last):
+      File "C:\Users\Admin\AppData\Local\Programs\Python\Python36-32\lib\site-packages\aiosqlite\core.py", line 136, in run
+        result = fn()
+    sqlite3.OperationalError: table prefixes has no column named guild
+    Cause "!prefix add $"
+  ☐  Minor bug: !warn gives no feedback on success
+    ☐  Later warning, stuck on prefix?
+
+  ☐ Bug ? 
+    Traceback (most recent call last):
+    File "C:\Users\Admin\AppData\Local\Programs\Python\Python36-32\lib\site-packages\discord\client.py", line 220, in _run_event
+      await coro(*args, **kwargs)
+    File "E:\Python\Bot Projects\boiletplate\cogs\events.py", line 141, in on_message
+      guildid=message.guild.id,
+  AttributeError: 'NoneType' object has no attribute 'id'

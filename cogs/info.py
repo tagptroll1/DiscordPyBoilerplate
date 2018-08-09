@@ -18,11 +18,11 @@ class Info:
         """Joins a server."""
         perms = discord.Permissions.all()
         embed = discord.Embed()
-        embed.description = f"Invite me with this link [here]({discord.utils.oauth_url(self.bot.app_info.id, perms)})"
+        embed.description = f"Invite me with [this link]({discord.utils.oauth_url(self.bot.app_info.id, permissions=perms)})"
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def remindme(self, ctx, time, message=None):
+    async def remindme(self, ctx, time: str, message: str=None):
         """remind_me <time> [message]
 
         Time units:

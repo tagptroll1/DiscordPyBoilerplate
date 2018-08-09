@@ -6,20 +6,23 @@ import traceback
 import datetime
 import configparser
 from pathlib import Path
+from typing import List, Callable, Union, Any
 
 import discord
 from discord.ext import commands
 
 from utils import database_manager as sqlite
 
-
+# Read configs
 config = configparser.ConfigParser()
 config.read("config.ini")
 secrets = config["Secrets"]
 botconfig = config["Bot"]
 
+# make sure the logs directory exists
 Path("./logs").mkdir(exist_ok=True)
 
+# Set up logging
 today_formatted = datetime.datetime.today().strftime("%B %d, &Y")
 logger = logging.getLogger("discord")
 logger.setLevel(logging.INFO)
@@ -32,11 +35,14 @@ handler.setFormatter(logging.Formatter(
 logger.addHandler(handler)
 
 class Prefixer:
+    """Class used to fetch guild-based prefixes"""
     def __init__(self):
         self.default = botconfig.get("default_prefix")
         self.prefix = self.startup()
 
-    def startup(self):
+
+    def startup(self) -> dict:
+        """Loads all saved prefixes to memory, including given default prefix from config"""
         rows =  sqlite.sync_fetchall("SELECT * FROM prefixes")
 
         prefix_dict = dict()
@@ -57,7 +63,9 @@ class Prefixer:
 
         return prefix_dict
 
-    async def add_prefix(self, guild, prefix):
+
+    async def add_prefix(self, guild: int, prefix: str):
+        """Async method to add a prefix to db, and memory"""
         await sqlite.execute("""
         INSERT OR IGNORE INTO prefixes(guild, prefix)
         VALUES (?, ?);""", [guild, prefix])
@@ -67,19 +75,25 @@ class Prefixer:
         else:
             self.prefix[guild] = [prefix, self.default]
 
+        # Sorts the prefixes to avoid conflic with sub-string based prefixes like ! and !!
         self.prefix[guild].sort(reverse=True)
 
-    def get_prefix(self, bot, message):
+
+    def get_prefix(self, bot: commands.Bot, message: discord.Message) -> List[str]:
+        """Allows for bot mentions and default prefix in dms, else mentions and stored prefix to guild id"""
         if message.guild is None:
             return commands.when_mentioned_or(self.default)(bot, message)
 
         prefixes = self.fetch_prefix(message.guild.id)
         return commands.when_mentioned_or(*prefixes)(bot, message)
 
-    def fetch_prefix(self, guild):
+
+    def fetch_prefix(self, guild: int) -> List[str]:
         return self.prefix.get(guild, [self.default])
 
-    async def remove_prefix(self, guild, prefix):
+
+    async def remove_prefix(self, guild: int, prefix: str):
+        """Removes prefix from db and memory"""
         if guild not in self.prefix:
             return
 
@@ -103,7 +117,7 @@ class Prefixer:
 
 
 class MyBot(commands.AutoShardedBot):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Union[str, Prefixer]):
         super().__init__(
             description=kwargs.pop("description", ""),
             case_insensitive=kwargs.pop("case", True),
@@ -124,14 +138,18 @@ class MyBot(commands.AutoShardedBot):
         self.loop.create_task(self.load_extensions())
 
 
-
     async def get_start_time(self):
+        """Saves the current datetime object of when the bot is ready and online"""
         await self.wait_until_ready()
         self.start_time = datetime.datetime.utcnow()
 
     async def load_extensions(self):
-        #await self.wait_until_ready()
-        #await asyncio.sleep(0.5)
+        """ Gets the cogs directory relative to the script, and loads all scripts within
+        Iterates through the directroy, it does not recursively go through deeper levels of the dir
+
+        Only adds the database cog if a database is present internally
+        then loads the rest of the scripts, exceptions can be put into a directory or added as a continue condition
+        """
 
         # Credits to Lucy (looselystyled#7626)
         # For most of the logic behind this cog loader
@@ -154,14 +172,16 @@ class MyBot(commands.AutoShardedBot):
                     print(f"{'Failed to load...':<19} {path:<1}!")
                     print(e, "\n")
 
-    def update(self, minute :int, method, *args, **kwargs):
+
+    def update(self, minute :int, method: Callable, *args: Any, **kwargs: Any):
         """Runs a method every x minutes with passed args and kwargs"""
 
-        async def _update(minute:int, method, *args, **kwargs):
+        async def _update(minute:int, method: Callable, *args, **kwargs):
             SYNC = 0
             ASYNC = 1
             sec = minute * 60
             
+            # Checks if the method given is a courotine or not.
             state = ASYNC if asyncio.iscoroutinefunction(method) else SYNC
             while True:
                 await asyncio.sleep(sec)
@@ -187,14 +207,14 @@ class MyBot(commands.AutoShardedBot):
 
 
     async def logout(self):
-        #Close other connections and tasks here
+        #Close other connections and tasks here like a database
         await super().logout()
 
 
 
-
-
 def run():
+    """Loads configs needed to run the bot"""
+
     desc = botconfig.get("description")
     token = secrets["bot_token"]
     enc_key = config["Database"].get("encrypt_key").encode('ASCII')
@@ -224,7 +244,9 @@ def run():
     finally:
         sys.exit(1)
 
-def make_sure_databases_exist():
+
+def make_sure_tables_exist():
+    """Uses the utility methods in database_manager to make sure all tables exist on startup"""
     sqlite.sync_execute("""
         CREATE TABLE IF NOT EXISTS blacklistedchannels(
             channelid   BIGINT,
@@ -245,7 +267,8 @@ def make_sure_databases_exist():
             guildid BIGINT,
             userid BIGINT);""")
 
+
 if __name__ == "__main__":
     os.system("CLS")
-    make_sure_databases_exist()
+    make_sure_tables_exist()
     run()

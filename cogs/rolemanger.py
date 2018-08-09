@@ -7,10 +7,10 @@ from utils.color_manager import random_hue_color
 from utils.embeder import short_message
 
 class RoleManager:
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    def __local_check(self, ctx):
+    def __local_check(self, ctx) -> bool:
         if not ctx.guild:
             return False
         if not ctx.guild.me.guild_permissions.manage_roles:
@@ -24,9 +24,10 @@ class RoleManager:
         pass
     # Group end
 
+
     @commands.has_permissions(manage_roles=True)
     @role_group.command(name="add")
-    async def role_add(self, ctx, *, name):
+    async def role_add(self, ctx, *, name: str):
         role_get = discord.utils.get(ctx.guild.role_hierarchy, name=name)
         
         if role_get:
@@ -209,7 +210,7 @@ class RoleManager:
 
     @commands.has_permissions(manage_roles=True)
     @role_permission.command(name="add")
-    async def add_permission(self, ctx, role: discord.Role, *, argument):
+    async def add_permission(self, ctx, role: discord.Role, *, argument: str):
         perm = role.permissions
         argsum = sum(1 for arg in argument.split("="))
         if argsum <= 1:
@@ -221,14 +222,14 @@ class RoleManager:
 
     @commands.has_permissions(manage_roles=True)
     @role_permission.command(name="remove")
-    async def remove_permission(self, ctx, role: discord.Role, *, argument):
+    async def remove_permission(self, ctx, role: discord.Role, *, argument: str):
         perm = role.permissions
         pass
     # remove permissions end
 
     @commands.has_permissions(manage_roles=True)
     @role_permission.command(name="edit")
-    async def edit_permission(self, ctx, role: discord.Role, *, argument):
+    async def edit_permission(self, ctx, role: discord.Role, *, argument: str):
         perm = role.permissions
         pass
     # edit permissions end

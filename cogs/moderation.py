@@ -18,7 +18,7 @@ class Moderator:
         return ctx.author.guild_permissions.administrator
 
     @commands.command(name="prefix")
-    async def add_prefix(self, ctx, *, prefix):
+    async def add_prefix(self, ctx, *, prefix: str):
         """Adds a custom prefix to the guild.
         The default prefix set in configs will always be availabel
         
@@ -47,7 +47,7 @@ class Moderator:
 
 
     @commands.command(aliases=["deleteprefix"])
-    async def removeprefix(self, ctx, prefix:str):
+    async def removeprefix(self, ctx, prefix: str):
         if prefix == self.bot.prefixer.default:
             await ctx.send("Can't delete default prefix!")
             return
@@ -65,7 +65,7 @@ class Moderator:
         pass
 
     @blacklist_group.command(name="add", aliases=["append", "set"])
-    async def add_blacklist(self, ctx, channel:discord.TextChannel=None):
+    async def add_blacklist(self, ctx, channel: discord.TextChannel=None):
         channel = channel or ctx.channel
 
         await db.execute("""
@@ -131,20 +131,20 @@ class Moderator:
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def cleartable(self, ctx, table:str):
+    async def cleartable(self, ctx, table: str):
         await db.execute(f"DELETE FROM {table} where guildid = ?;", [ctx.guild.id])
         await ctx.message.add_reaction("🔨")
         self.bot.logger.warning(f"{(ctx.author)} wiped data for the guild {ctx.guild.name}")
 
     @commands.command()
     @commands.is_owner()
-    async def droptable(self, ctx, table:str):
+    async def droptable(self, ctx, table: str):
         await db.execute(f"DROP TABLE IF EXISTS {table}")
         await ctx.message.add_reaction("🔨")
         self.bot.logger.warning(f"Owner dropped the table {table}, if it existed")
 
     @commands.command()
-    async def warn(self, ctx, user:discord.Member, *, reason:str = None):
+    async def warn(self, ctx, user: discord.Member, *, reason: str=None):
         await db.execute("""
             INSERT INTO warnings(guildid, userid)
                 VALUES (?, ?);
@@ -179,7 +179,7 @@ class Moderator:
 
     @commands.command()
     @commands.bot_has_permissions(kick_members=True)
-    async def kick(self, ctx, to_kick :discord.Member, *, reason=None):
+    async def kick(self, ctx, to_kick: discord.Member, *, reason=None):
         reason = reason or f"Kicked by {ctx.author.name}"
         try:
             await to_kick.send(f"You've been kicked from {ctx.guild.name} by {str(ctx.author)}")
@@ -201,7 +201,7 @@ class Moderator:
 
     @commands.command()
     @commands.bot_has_permissions(ban_members=True)
-    async def ban(self, ctx, to_ban, *, reason=None):
+    async def ban(self, ctx, to_ban :discord.Member, *, reason: str=None):
         try:
             member = await commands.MemberConverter().convert(ctx, to_ban)
             try:
@@ -237,7 +237,7 @@ class Moderator:
 
     @commands.command()
     @commands.bot_has_permissions(ban_members=True)
-    async def unban(self, ctx, to_ban :int, *, reason=None):
+    async def unban(self, ctx, to_ban :int, *, reason: str=None):
         member = discord.Object(id=to_ban)
 
         reason = reason or f"Unbanned by {ctx.author.name}"
@@ -256,7 +256,7 @@ class Moderator:
 
     @commands.command()
     @commands.bot_has_permissions(ban_members=True)
-    async def softban(self, ctx, to_ban: discord.Member, *, reason=None):
+    async def softban(self, ctx, to_ban: discord.Member, *, reason: str=None):
         reason_msg = f"Reason: {reason}\n" if reason else ""
         msg = dedent(f"""
         You have been softbanned from {ctx.guild.name} by {str(ctx.author)}
@@ -285,31 +285,63 @@ class Moderator:
         self.bot.logger.info(f"{str(ctx.author)} has softbanned {str(to_ban)} from {ctx.guild.name}")
 
     @commands.command()
-    async def mute(self, ctx, member: discord.Member):
+    async def voicemute(self, ctx, member: discord.Member):
         await member.edit(mute=True)
         await ctx.message.add_reaction("🔨")
         self.bot.logger.info(f"{str(ctx.author)} has voice muted {str(member)} in {ctx.guild.name}")
 
     @commands.command()
-    async def unmute(self, ctx, member: discord.Member):
+    async def voiceunmute(self, ctx, member: discord.Member):
         await member.edit(mute=False)
         await ctx.message.add_reaction("🔧")
         self.bot.logger.info(
             f"{str(ctx.author)} has voice unmuted {str(member)} in {ctx.guild.name}")
 
     @commands.command()
-    async def deafen(self, ctx, member: discord.Member):
+    async def voicedeafen(self, ctx, member: discord.Member):
         await member.edit(deafen=True)
         await ctx.message.add_reaction("🔨")
         self.bot.logger.info(
             f"{str(ctx.author)} has voice deafened {str(member)} in {ctx.guild.name}")
 
     @commands.command()
-    async def undeafen(self, ctx, member: discord.Member):
+    async def voiceundeafen(self, ctx, member: discord.Member):
         await member.edit(deafen=False)
         await ctx.message.add_reaction("🔧")
         self.bot.logger.info(
-            f"{str(ctx.author)} has voice undeafened {str(member)} in {ctx.guild.name}")
+            f"{str(ctx.author)} has voice un-deafened {str(member)} in {ctx.guild.name}")
+
+
+    @commands.command()
+    @commands.bot_has_permissions(manage_roles=True)
+    async def mute(self, ctx, member: discord.Member, *, reason: str=None):
+        _reason = f"{member} has been permanently muted. "
+        if reason:
+            _reason += f"Reason: *{reason}*"
+
+        _mute_role = discord.utils.get(ctx.guild.roles, name="Muted")
+
+        if not _mute_role:
+            param = {
+                "name": "Muted",
+                "permissions": discord.Permissions.none(),
+                "reason": "To mute members"
+            }
+            try:
+                await ctx.guild.create_role(**param)
+            except discord.Forbidden:
+                await ctx.send("I require manage roles permissions to create required role")
+                return
+
+        # TODO: come up with system to prevent messages being sent by muted
+        # TODO: Controll all their roles to make sure no other roles override mute
+
+        await member.add_roles(_mute_role, reason=_reason)
+        await ctx.send(_reason)
+        self.bot.logger.info(
+            f"{_reason}. Mute by: {str(ctx.author)}"
+        )
+
 
     @commands.group()
     async def clear(self, ctx):

@@ -1,5 +1,6 @@
 import datetime
 import asyncio
+from typing import List
 from collections import OrderedDict as odict
 
 import discord
@@ -20,7 +21,7 @@ class Events:
         self.log_chache = []
 
     def log_dump(self):
-        async def dump_method(cache):
+        async def dump_method(cache: List[odict]):
             args = []
             for ord_d in cache:
                 if ord_d["content"]:
@@ -40,12 +41,12 @@ class Events:
             # Example of database dumping, with postgresql
             # ===================================================
             #query = """
-            #INSERT INTO messagelog(messageid, authorid, guildid, channelid, date, content)
-            #    VALUES($1, $2, $3, $4, $5, $6)
-            #ON CONFLICT(messageid, authorid)
-            #    DO NOTHING"""
+            #   INSERT INTO messagelog(messageid, authorid, guildid, channelid, date, content)
+            #       VALUES($1, $2, $3, $4, $5, $6)
+            #   ON CONFLICT(messageid, authorid)
+            #       DO NOTHING"""
             #
-            # here self.bot.db is an pool from -> asyncpg.create_pool()
+            ## here self.bot.db is an pool from -> asyncpg.create_pool()
             #async with self.bot.db.acquire() as connection:
             #    async with connection.transaction():
             #        await self.bot.db.executemany(query, args)
@@ -64,7 +65,7 @@ class Events:
             row[0] for row in self.bot.blacklistedrecords}
 
 
-    def is_blacklisted_channel(self, channel):
+    def is_blacklisted_channel(self, channel: int) -> bool:
         if channel in self.bot.blacklisted_channels:
             return True
         return False
