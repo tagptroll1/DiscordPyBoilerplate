@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from emoji import UNICODE_EMOJI as emoji
 import discord
 from discord.ext import commands
 
@@ -11,7 +11,12 @@ class Test:
         self.bot = bot
         self.db = bot.sqlite
 
-    
+    @commands.command()
+    async def repeat(self, ctx, *, arg):
+        print(arg)
+        await ctx.send(list(emoji.keys())[10:])
+
+
     @commands.command()
     async def table(self, ctx, *, query):
         await self.db.execute(query)

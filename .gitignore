@@ -106,3 +106,4 @@ venv.bak/
 # my files
 config.ini
 testdb.sqlite
+my_database.db
