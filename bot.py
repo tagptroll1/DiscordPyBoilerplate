@@ -12,7 +12,7 @@ import discord
 from discord.ext import commands
 
 from utils import database_manager as sqlite
-
+ 
 # Read configs
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -33,6 +33,9 @@ handler = logging.FileHandler(
 handler.setFormatter(logging.Formatter(
     "%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
 logger.addHandler(handler)
+
+SYNC = 0
+ASYNC = 1
 
 class Prefixer:
     """Class used to fetch guild-based prefixes"""
@@ -144,7 +147,8 @@ class MyBot(commands.AutoShardedBot):
         self.start_time = datetime.datetime.utcnow()
 
     async def load_extensions(self):
-        """ Gets the cogs directory relative to the script, and loads all scripts within
+        """ 
+        Gets the cogs directory relative to the script, and loads all scripts within
         Iterates through the directroy, it does not recursively go through deeper levels of the dir
 
         Only adds the database cog if a database is present internally
@@ -177,8 +181,6 @@ class MyBot(commands.AutoShardedBot):
         """Runs a method every x minutes with passed args and kwargs"""
 
         async def _update(minute:int, method: Callable, *args, **kwargs):
-            SYNC = 0
-            ASYNC = 1
             sec = minute * 60
             
             # Checks if the method given is a courotine or not.
@@ -190,7 +192,7 @@ class MyBot(commands.AutoShardedBot):
                     try:
                         method(*args, **kwargs)
                     except Exception:
-                        logger.exception("Update triggered an exception with "
+                        logger.exception("Update raised an exception with "
                                          f"method {method.__name__}\n"
                                          f"args {args}, kwargs {kwargs}")
 
@@ -198,7 +200,7 @@ class MyBot(commands.AutoShardedBot):
                     try:
                         await method(*args, **kwargs)
                     except Exception:
-                        logger.exception("Update triggered an exception with "
+                        logger.exception("Update raised an exception with "
                                         f"method {method.__name__}\n"
                                         f"args {args}, kwargs {kwargs}")
 
@@ -245,30 +247,8 @@ def run():
         sys.exit(1)
 
 
-def make_sure_tables_exist():
-    """Uses the utility methods in database_manager to make sure all tables exist on startup"""
-    sqlite.sync_execute("""
-        CREATE TABLE IF NOT EXISTS blacklistedchannels(
-            channelid   BIGINT,
-            guildid     BIGINT,
-            date        timestamp,
-            setbyid     BIGING,
-            PRIMARY KEY (channelid, guildid));""")
-
-    sqlite.sync_execute("""
-        CREATE TABLE IF NOT EXISTS prefixes(
-            guildid BIGINT,
-            prefix text,
-            PRIMARY KEY (guildid, prefix));""")
-
-    sqlite.sync_execute("""
-        CREATE TABLE IF NOT EXISTS warnings(
-            id int PRIMARY KEY,
-            guildid BIGINT,
-            userid BIGINT);""")
-
 
 if __name__ == "__main__":
     os.system("CLS")
-    make_sure_tables_exist()
+    sqlite.make_sure_tables_exist()
     run()

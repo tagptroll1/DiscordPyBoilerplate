@@ -37,18 +37,19 @@ class Events:
                 args.append(list(ord_d.values()))
             # Loop end
 
-            # Example of database dumping, with postgresql
             # ===================================================
-            #query = """
-            #   INSERT INTO messagelog(messageid, authorid, guildid, channelid, date, content)
-            #       VALUES($1, $2, $3, $4, $5, $6)
-            #   ON CONFLICT(messageid, authorid)
-            #       DO NOTHING"""
+            # | Example of database dumping, with postgresql
+            # ===================================================
+            # query = """
+            #    INSERT INTO messagelog(messageid, authorid, guildid, channelid, date, content)
+            #        VALUES($1, $2, $3, $4, $5, $6)
+            #    ON CONFLICT(messageid, authorid)
+            #        DO NOTHING"""
             #
-            ## here self.bot.db is an pool from -> asyncpg.create_pool()
-            #async with self.bot.db.acquire() as connection:
-            #    async with connection.transaction():
-            #        await self.bot.db.executemany(query, args)
+            # # here self.bot.db is an pool from -> asyncpg.create_pool()
+            # async with self.bot.db.acquire() as connection:
+            #     async with connection.transaction():
+            #         await self.bot.db.executemany(query, args)
             # =================================================== 
 
             # Clear cache for new messages
@@ -161,7 +162,8 @@ class Events:
 
 
     async def on_message_delete(self, message: Message) -> None:
-        """Called when a message is deleted. 
+        """
+        Called when a message is deleted. 
         If the message is not found in the Client.messages cache, then these events will 
         not be called.  This happens if the message is too old or the client is 
         participating in high traffic guilds. 
@@ -172,7 +174,8 @@ class Events:
         pass
 
     async def on_message_edit(self, before: Message, after: Message) -> None:
-        """Called when a Message receives an update event.
+        """
+        Called when a Message receives an update event.
         The following non-exhaustive cases trigger this event:
 
         A message has been pinned or unpinned.
@@ -188,7 +191,8 @@ class Events:
         pass
 
     async def on_reaction_add(self, reaction: Reaction, user: abc.User) -> None:
-        """Called when a message has a reaction added to it. 
+        """
+        Called when a message has a reaction added to it. 
         Similar to on_message_edit, if the message is not found in the Client.messages cache, 
         then this event will not be called.
         
@@ -198,7 +202,8 @@ class Events:
         pass
 
     async def on_reaction_remove(self, reaction: Reaction, user: abc.User) -> None:
-        """Called when a message has a reaction removed from it. 
+        """
+        Called when a message has a reaction removed from it. 
         Similar to on_message_edit, 
         if the message is not found in the Client.messages cache, 
         then this event will not be called.
@@ -209,7 +214,8 @@ class Events:
         pass
 
     async def on_reaction_clear(self, message: Message, reactions: Reaction) -> None:
-        """Called when a message has all its reactions removed from it. 
+        """
+        Called when a message has all its reactions removed from it. 
         Similar to on_message_edit(), 
         if the message is not found in the Client.messages cache, 
         then this event will not be called.
@@ -220,21 +226,24 @@ class Events:
         pass
 
     async def on_private_channel_delete(self, channel: abc.PrivateChannel) -> None:
-        """Called whenever a private channel is deleted.
+        """
+        Called whenever a private channel is deleted.
 
         channel – The abc.PrivateChannel that got deleted.
         """
         pass
 
     async def on_private_channel_create(self, channel: abc.PrivateChannel) -> None:
-        """Called whenever a private channel is created.
+        """
+        Called whenever a private channel is created.
 
         channel – The abc.PrivateChannel that got created.
         """
         pass
 
     async def on_private_channel_update(self, before: abc.PrivateChannel, after: abc.PrivateChannel):
-        """Called whenever a private group DM is updated. 
+        """
+        Called whenever a private group DM is updated. 
         e.g. changed name or topic.
 
         before -- The GroupChannel that got updated with the old info.
@@ -243,7 +252,8 @@ class Events:
         pass
 
     async def on_guild_channel_delete(self, channel: abc.GuildChannel) -> None:
-        """Called whenever a guild channel is deleted.
+        """
+        Called whenever a guild channel is deleted.
         Note that you can get the guild from guild.
 
         channel -- The abc.GuildChannel that got deleted.
@@ -251,7 +261,8 @@ class Events:
         pass
 
     async def on_guild_channel_create(self, channel: abc.GuildChannel) -> None:
-        """Called whenever a guild channel is created.
+        """
+        Called whenever a guild channel is created.
         Note that you can get the guild from guild.
 
         channel - - The abc.GuildChannel that got created.
@@ -259,7 +270,8 @@ class Events:
         pass
 
     async def on_guild_channel_update(self, before: abc.GuildChannel, after: abc.GuildChannel):
-        """Called whenever a guild channel is updated. 
+        """
+        Called whenever a guild channel is updated. 
         e.g. changed name, topic, permissions.
 
         before -- The abc.GuildChannel that got updated with the old info.
@@ -268,7 +280,8 @@ class Events:
         pass
 
     async def on_guild_channel_pins_update(self, channel: abc.GuildChannel, last_pin: datetime):
-        """Called whenever a message is pinned or unpinned from a guild channel.
+        """
+        Called whenever a message is pinned or unpinned from a guild channel.
 
         channel -- The abc.GuildChannel that had it’s pins updated.
         last_pin -- A datetime.datetime object representing when the latest 
@@ -277,21 +290,24 @@ class Events:
         pass
 
     async def on_member_join(self, member: Member) -> None:
-        """Called when a Member joins a Guild.
+        """
+        Called when a Member joins a Guild.
 
         member -- The Member that joined.
         """
         pass
 
     async def on_member_remove(self, member: Member) -> None:
-        """Called when a Member leaves a Guild.
+        """
+        Called when a Member leaves a Guild.
 
         member -- The Member that left.
         """
         pass
 
     async def on_member_update(self, before: Member, after: Member) -> None:
-        """Called when a Member updates their profile.
+        """
+        Called when a Member updates their profile.
         This is called when one or more of the following things change:
             status
             game playing
@@ -305,14 +321,16 @@ class Events:
         pass
 
     async def on_guild_join(self, guild: Guild) -> None:
-        """Called when a Guild is either created by the Client or when the Client joins a guild.
+        """
+        Called when a Guild is either created by the Client or when the Client joins a guild.
 
         guild -- The Guild that was joined.
         """
         pass
 
     async def on_guild_remove(self, guild: Guild) -> None:
-        """Called when a Guild is removed from the Client.
+        """
+        Called when a Guild is removed from the Client.
 
         This happens through, but not limited to, these circumstances:
             The client got banned.
@@ -327,7 +345,8 @@ class Events:
         pass
 
     async def on_guild_update(self, before: Guild, after: Guild) -> None:
-        """Called when a Guild updates, 
+        """
+        Called when a Guild updates, 
         for example:
             Changed name
             Changed AFK channel
@@ -340,7 +359,8 @@ class Events:
         pass
 
     async def on_guild_role_create(self, role: Role) -> None:
-        """Called when a Guild creates a new Role.
+        """
+        Called when a Guild creates a new Role.
         To get the guild it belongs to, use Role.guild.
 
         role – The Role that was created.
@@ -348,7 +368,8 @@ class Events:
         pass
 
     async def on_guild_role_delete(self, role: Role) -> None:
-        """Called when a Guild deletes a new Role.
+        """
+        Called when a Guild deletes a new Role.
         To get the guild it belongs to, use Role.guild.
 
         role – The Role that was deleted.
@@ -356,7 +377,8 @@ class Events:
         pass
 
     async def on_guild_role_update(self, before: Role, after: Role) -> None:
-        """Called when a Role is changed guild-wide.
+        """
+        Called when a Role is changed guild-wide.
 
         before -- The Role that updated with the old info.
         after -- The Role that updated with the updated info.
@@ -364,7 +386,8 @@ class Events:
         pass
 
     async def on_guild_emojis_update(self, guild: Guild, before: List[Emoji], after: List[Emoji]):
-        """Called when a Guild adds or removes Emoji.
+        """
+        Called when a Guild adds or removes Emoji.
 
         guild -- The Guild who got their emojis updated.
         before -- A list of Emoji before the update.
@@ -373,7 +396,8 @@ class Events:
         pass
 
     async def on_voice_state_update(self, member: Member, before: VoiceState, after: VoiceState):
-        """Called when a Member changes their VoiceState.
+        """
+        Called when a Member changes their VoiceState.
         The following, but not limited to, examples illustrate when this event is called:
             A member joins a voice room.
             A member leaves a voice room.
@@ -387,7 +411,8 @@ class Events:
         pass
 
     async def on_member_ban(self, guild: Guild, user: User) -> None:
-        """Called when user gets banned from a Guild.
+        """
+        Called when user gets banned from a Guild.
 
         guild -- The Guild the user got banned from.
         user -- The user that got banned. Can be either User or Member depending if the
@@ -396,7 +421,8 @@ class Events:
         pass
 
     async def on_member_unban(self, guild: Guild, user: User) -> None:
-        """Called when a User gets unbanned from a Guild.
+        """
+        Called when a User gets unbanned from a Guild.
 
         guild -- The Guild the user got unbanned from.
         user -- The User that got unbanned.
@@ -404,7 +430,8 @@ class Events:
         pass
 
     async def on_group_join(self, channel: abc.PrivateChannel, user: User) -> None:
-        """Called when someone joins a group, 
+        """
+        Called when someone joins a group, 
         i.e. a PrivateChannel with a PrivateChannel.type of ChannelType.group.
         
         channel -- The group that the user joined.
@@ -413,7 +440,8 @@ class Events:
         pass
 
     async def on_group_remove(self, channel: abc.PrivateChannel, user: User) -> None:
-        """Called when someone leaves a group,
+        """
+        Called when someone leaves a group,
         i.e. a PrivateChannel with a PrivateChannel.type of ChannelType.group.
 
         channel -- The group that the user left.
@@ -422,21 +450,24 @@ class Events:
         pass
 
     async def on_relationship_add(self, relationship: Relationship) -> None:
-        """Called when a Relationship is added from the ClientUser.
+        """
+        Called when a Relationship is added from the ClientUser.
 
         relationship -- The relationship that was added.
         """
         pass
 
     async def on_relationship_remove(self, relationship: Relationship) -> None:
-        """Called when a Relationship is removed from the ClientUser.
+        """
+        Called when a Relationship is removed from the ClientUser.
 
         relationship -- The relationship that was removed.
         """
         pass
 
     async def on_relationship_update(self, before: Relationship, after: Relationship) -> None:
-        """Called when a Relationship is updated, 
+        """
+        Called when a Relationship is updated, 
         e.g. when you block a friend or a friendship is accepted.
 
         before -- The previous relationship status.
@@ -448,7 +479,8 @@ class Events:
 
     # Raw events
     async def on_raw_message_delete(self, payload: RawMessageDeleteEvent) -> None:
-        """Called when a message is deleted. 
+        """
+        Called when a message is deleted. 
         Unlike on_message_delete(), 
         this is called regardless of the message being in the internal message cache or not.
 
@@ -457,7 +489,8 @@ class Events:
         pass
 
     async def on_raw_bulk_message_delete(self, payload: RawBulkMessageDeleteEvent) -> None:
-        """Called when a bulk delete is triggered. 
+        """
+        Called when a bulk delete is triggered. 
         This event is called regardless of the message IDs being in the internal message cache or not.
 
         payload -- RawBulkMessageDeleteEvent, channel, guild and list of message ids
@@ -465,7 +498,8 @@ class Events:
         pass
 
     async def on_raw_reaction_add(self, payload: RawReactionActionEvent) -> None:
-        """Called when a reaction has a reaction added. 
+        """
+        Called when a reaction has a reaction added. 
         Unlike on_reaction_add(), 
         this is called regardless of the state of the internal message cache.
 
@@ -474,7 +508,8 @@ class Events:
         pass
 
     async def on_raw_reaction_remove(self, payload: RawReactionActionEvent) -> None:
-        """Called when a reaction has a reaction removed. 
+        """
+        Called when a reaction has a reaction removed. 
         Unlike on_reaction_remove(), 
         this is called regardless of the state of the internal message cache.
 
@@ -483,7 +518,8 @@ class Events:
         pass
 
     async def on_raw_reaction_clear(self, payload: RawReactionClearEvent) -> None:
-        """Called when a message has all its reactions removed. 
+        """
+        Called when a message has all its reactions removed. 
         Unlike on_reaction_clear(), 
         this is called regardless of the state of the internal message cache.
 

@@ -58,3 +58,25 @@ async def fetchall(query: str, *args) -> List[sql.Row]:
             await cursor.close()
     return rows 
 
+
+def make_sure_tables_exist():
+    """Uses the utility methods in database_manager to make sure all tables exist on startup"""
+    sync_execute("""
+        CREATE TABLE IF NOT EXISTS blacklistedchannels(
+            channelid   BIGINT,
+            guildid     BIGINT,
+            date        timestamp,
+            setbyid     BIGING,
+            PRIMARY KEY (channelid, guildid));""")
+
+    sync_execute("""
+        CREATE TABLE IF NOT EXISTS prefixes(
+            guildid BIGINT,
+            prefix text,
+            PRIMARY KEY (guildid, prefix));""")
+
+    sync_execute("""
+        CREATE TABLE IF NOT EXISTS warnings(
+            id int PRIMARY KEY,
+            guildid BIGINT,
+            userid BIGINT);""")
