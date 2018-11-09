@@ -1,9 +1,10 @@
-import re
 import asyncio
 import datetime as dt
+import re
 
 import discord
 from discord.ext import commands
+
 
 class Info:
     def __init__(self, bot):
@@ -16,13 +17,17 @@ class Info:
     @commands.command(aliases=['invite'])
     async def join(self, ctx):
         """Joins a server."""
+        info_id = self.bot.app_info.id
         perms = discord.Permissions.all()
         embed = discord.Embed()
-        embed.description = f"Invite me with [this link]({discord.utils.oauth_url(self.bot.app_info.id, permissions=perms)})"
+        embed.description = (
+            "Invite me with [this link]("
+            f"{discord.utils.oauth_url(info_id, permissions=perms)})"
+        )
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def remindme(self, ctx, time: str, message: str=None):
+    async def remindme(self, ctx, time: str, message: str = None):
         """remind_me <time> [message]
 
         Time units:
@@ -41,15 +46,21 @@ class Info:
         await ctx.message.delete()
         message = message or "No message attached!"
         pattern = re.compile(
-            r'((?P<days>\d+)d)?((?P<hours>\d+)h)?((?P<minutes>\d+)m)?((?P<seconds>\d+)s)?')
+            r'((?P < days >\d+)d)?((?P < hours >\d+)h)?'
+            r'((?P < minutes >\d+)m)?((?P < seconds >\d+)s)?'
+        )
 
         match = pattern.fullmatch(time)
         if match:
             kwargs = {
-                "days": int(match.group("days")) if match.group("days") is not None else 0,
-                "hours": int(match.group("hours")) if match.group("hours") is not None else 0,
-                "minutes": int(match.group("minutes")) if match.group("minutes") is not None else 0,
-                "seconds": int(match.group("seconds")) if match.group("seconds") is not None else 0,
+                "days": int(match.group("days"))
+                if match.group("days") is not None else 0,
+                "hours": int(match.group("hours"))
+                if match.group("hours") is not None else 0,
+                "minutes": int(match.group("minutes"))
+                if match.group("minutes") is not None else 0,
+                "seconds": int(match.group("seconds"))
+                if match.group("seconds") is not None else 0,
             }
         else:
             return
@@ -72,7 +83,9 @@ class Info:
 
         await ctx.send(f"It's been {sleeptime:g} seconds since "
                        f"{ctx.author.mention} made this reminder:\n{message}")
-        self.bot.logger.info(f"{str(ctx.author)}set a reminder for {reminder_string}")
+        self.bot.logger.info(
+            f"{str(ctx.author)}set a reminder for {reminder_string}")
+
 
 def setup(bot):
     bot.add_cog(Info(bot))

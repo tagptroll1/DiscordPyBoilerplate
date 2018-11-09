@@ -1,6 +1,5 @@
 import traceback
 
-import discord
 from discord.ext import commands
 
 
@@ -23,7 +22,8 @@ class ErrorHandler:
         if isinstance(error, ignored):
             return
 
-        # If it's a non ignored error, log the traceback, with the last 5 messages
+        # If it's a non ignored error, log the traceback,
+        # with the last 5 messages
         # Before the command that triggered the exception for debugging
         self.bot.logger.error("".join(traceback.format_exception(
             type(error), error, error.__traceback__)))
@@ -31,41 +31,58 @@ class ErrorHandler:
         async for msg in ctx.channel.history(limit=5):
             self.bot.logger.info(f"{msg.author}: {msg.content}")
 
-        # List of all discord.ext.commands error (except the ones ignored above)
+        # List of all discord.ext.commands error
+        # (except the ones ignored above)
         if isinstance(error, commands.MissingRequiredArgument):
-            """Exception raised when parsing a command and a parameter 
+            """Exception raised when parsing a command and a parameter
             that is required is not encountered.
             """
             print(error)
 
         elif isinstance(error, commands.BadArgument):
-            """Exception raised when a parsing or conversion failure is 
+            """Exception raised when a parsing or conversion failure is
             encountered on an argument to pass into a command.
             """
             print(error)
 
         elif isinstance(error, commands.NoPrivateMessage):
-            """Exception raised when an operation does not work in private message contexts."""
+            """
+            Exception raised when an operation does not
+            work in private message contexts.
+            """
             print(error)
 
         elif isinstance(error, commands.NotOwner):
-            """Exception raised when the message author is not the owner of the bot."""
+            """
+            Exception raised when the message
+            author is not the owner of the bot.
+            """
             print(error)
 
         elif isinstance(error, commands.MissingPermissions):
-            """Exception raised when the command invoker lacks permissions to run command."""
+            """
+            Exception raised when the command invoker
+            lacks permissions to run command.
+            """
             await ctx.send(error)
 
         elif isinstance(error, commands.BotMissingPermissions):
-            """Exception raised when the bot lacks permissions to run command."""
+            """
+            Exception raised when the bot lacks permissions to run command.
+            """
             await ctx.send(error)
 
         elif isinstance(error, commands.CommandOnCooldown):
-            """Exception raised when the command being invoked is on cooldown."""
+            """
+            Exception raised when the command being invoked is on cooldown.
+            """
             await ctx.send(error)
 
         elif isinstance(error, commands.CheckFailure):
-            """Exception raised when the predicates in Command.checks have failed."""
+            """
+            Exception raised when the predicates in
+            Command.checks have failed.
+            """
             print(error)
 
         elif isinstance(error, commands.DisabledCommand):
@@ -73,11 +90,14 @@ class ErrorHandler:
             print(error)
 
         elif isinstance(error, commands.CommandInvokeError):
-            """Exception raised when the command being invoked raised an exception."""
+            """
+            Exception raised when the command being
+            invoked raised an exception.
+            """
             print(error)
 
         elif isinstance(error, commands.TooManyArguments):
-            """Exception raised when the command was passed too many arguments 
+            """Exception raised when the command was passed too many arguments
             and its Command.ignore_extra attribute was not set to True.
             """
             print(error)
@@ -85,11 +105,12 @@ class ErrorHandler:
             """The base exception type for all command related errors.
 
             This inherits from discord.DiscordException.
-            This exception and exceptions derived from it are handled in a 
-            special way as they are caught and passed into a 
+            This exception and exceptions derived from it are handled in a
+            special way as they are caught and passed into a
             special event from Bot, on_command_error().
             """
             print(error)
+
 
 def setup(bot):
     bot.add_cog(ErrorHandler(bot))

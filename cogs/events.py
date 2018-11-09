@@ -1,14 +1,14 @@
-import datetime
 import asyncio
-from typing import List
+import datetime
 from collections import OrderedDict as odict
+from typing import List
 
 import discord
+from Cryptodome.Cipher import AES
+from Cryptodome.Util import Padding
 from discord import *
 from discord import abc
 from discord.ext import commands
-from Cryptodome.Cipher import AES
-from Cryptodome.Util import Padding
 
 from utils import database_manager as sqlite
 
@@ -50,7 +50,7 @@ class Events:
             # async with self.bot.db.acquire() as connection:
             #     async with connection.transaction():
             #         await self.bot.db.executemany(query, args)
-            # =================================================== 
+            # ===================================================
 
             # Clear cache for new messages
             cache[:] = []
@@ -65,14 +65,11 @@ class Events:
         self.bot.blacklisted_channels = {
             row[0] for row in self.bot.blacklistedrecords}
 
-
     def is_blacklisted_channel(self, channel: int) -> bool:
         """Checks if channelid is in memory of blacklisted channels"""
         if channel in self.bot.blacklisted_channels:
             return True
         return False
-
-
 
     async def on_connect(self) -> None:
         """Called when the client has successfully connected to Discord.
@@ -99,9 +96,6 @@ class Events:
               f"Using discord.py version: {discord.__version__}\n"
               f"Owner: {self.bot.app_info.owner}\n")
         print("-" * 10)
-
- 
-
 
     async def on_shard_ready(self, shard_id: int) -> None:
         """Similar to on_ready() except used by AutoShardedClient 
@@ -136,7 +130,7 @@ class Events:
 
         # Logging setup with encryption
         # See log_dump for how to store.
-        
+
         self.log_chache.append(
             odict(
                 messageid=message.id,
@@ -158,8 +152,7 @@ class Events:
         bucket = self.money_cooldown.get_bucket(message)
         retry_after = bucket.update_rate_limit()
         if not retry_after:
-            pass # give money here
-
+            pass  # give money here
 
     async def on_message_delete(self, message: Message) -> None:
         """
@@ -195,7 +188,7 @@ class Events:
         Called when a message has a reaction added to it. 
         Similar to on_message_edit, if the message is not found in the Client.messages cache, 
         then this event will not be called.
-        
+
         reaction -- A Reaction showing the current state of the reaction
         user -- A User or Member of the user who added the reaction
         """
@@ -314,7 +307,7 @@ class Events:
             avatar
             nickname
             roles
-        
+
         before -- The Member that updated their profile with the old info.
         after -- The Member that updated their profile with the updated info.
         """
@@ -433,7 +426,7 @@ class Events:
         """
         Called when someone joins a group, 
         i.e. a PrivateChannel with a PrivateChannel.type of ChannelType.group.
-        
+
         channel -- The group that the user joined.
         user -- The user that joined.
         """
@@ -475,9 +468,8 @@ class Events:
         """
         pass
 
-
-
     # Raw events
+
     async def on_raw_message_delete(self, payload: RawMessageDeleteEvent) -> None:
         """
         Called when a message is deleted. 
@@ -526,6 +518,7 @@ class Events:
         payload -- RawReactionClearEvent, contains message, channel and guild id
         """
         pass
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Events(bot))

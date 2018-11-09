@@ -1,5 +1,5 @@
-import discord
 from discord.ext import commands
+
 
 class BasicCog:
     def __init__(self, bot):
@@ -28,6 +28,10 @@ class BasicCog:
 
     def __error(self, ctx, error):
         """I'm an error handler!"""
+
+    @commands.command()
+    async def command_template(self, ctx):
+        await ctx.send("Test")
 
 
 def setup(bot):

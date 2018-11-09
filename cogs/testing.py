@@ -1,10 +1,12 @@
-from pathlib import Path
-from emoji import UNICODE_EMOJI as emoji
 import discord
 from discord.ext import commands
 
+from emoji import UNICODE_EMOJI as emoji
+
+
 class MyError(Exception):
     pass
+
 
 class Test:
     def __init__(self, bot):
@@ -16,7 +18,6 @@ class Test:
         print(arg)
         await ctx.send(list(emoji.keys())[10:])
 
-
     @commands.command()
     async def table(self, ctx, *, query):
         await self.db.execute(query)
@@ -27,7 +28,6 @@ class Test:
         query = """INSERT INTO test(text) VALUES (?)"""
         await self.db.execute(query, [text])
         await ctx.message.add_reaction("👌")
-
 
     @commands.command()
     async def getall(self, ctx):
@@ -63,11 +63,9 @@ class Test:
         except Exception as e:
             print(e)
 
-    
     @commands.command(name="raise")
     async def raise_my_error(self, ctx):
         raise MyError("Whopsie")
-
 
 
 def setup(bot):
