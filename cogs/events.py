@@ -135,7 +135,7 @@ class Events:
             odict(
                 messageid=message.id,
                 authorid=message.author.id,
-                guildid=message.guild.id,
+                guildid=message.guild.id if message.guild else None,
                 channelid=message.channel.id,
                 date=datetime.datetime.utcnow(),
                 content=message.content
